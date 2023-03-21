@@ -1,0 +1,4 @@
+21.3.23
+todo on thursday:
+  -start coding in C all of the functions: wam, ddg, gl, jacobi
+  -choose the data structure to pass them (array of arrays)
