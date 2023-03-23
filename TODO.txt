@@ -2,3 +2,21 @@
 todo on thursday:
   -start coding in C in spkmeans.c all of the functions: wam, ddg, gl, jacobi
   -choose the data structure to pass them (array of arrays)
+
+
+**remember: printing "An Error Has Occurred" is the interface's responsibility***
+**remember: for now we assume datamatrix memeory release is the wrapper functions responsibility in spkmeans.c***
+**RELEASE MEMORY***
+** REMEMBER ; *****
+
+to finish the spkmeans.c:
+create a main func to get command line arguments
+  -create data matrix
+
+within the wrapper function, create function that will print the correct output
+  -release data matrix data
+
+  **ask if we need eigenvalues separated by comma
+
+
+
