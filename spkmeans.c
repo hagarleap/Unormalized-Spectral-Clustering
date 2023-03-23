@@ -3,10 +3,10 @@
 #include <stdio.h>
 #include <string.h>
 
-//returns matrix of zeros
+/*returns matrix of zeros*/
 double** matrix_maker(int dim1, int dim2){
     double **mat;
-    int i, j;
+    int i;
     mat = malloc(dim1*sizeof(double*));
     if(mat==NULL){
         return NULL;
@@ -17,9 +17,10 @@ double** matrix_maker(int dim1, int dim2){
             return NULL;
         }        
     }
+    return mat;
 }
 
-//Recives 2 vectors. Returns the euclidian distance between them
+/*Recives 2 vectors. Returns the euclidian distance between them*/
 double Squared_Euclidean_distance(double* vec1, double* vec2, int vector_len){
     double sum=0;
     int j;
@@ -30,30 +31,31 @@ double Squared_Euclidean_distance(double* vec1, double* vec2, int vector_len){
     return sum;
 }
 
-//free matrix data!
+/*free matrix data!*/
 void free_matrix(double** mat, int dim1){
+    int i;
     if(mat==NULL){
         return;
     }
-    for(int i=0; i<dim1; i++){
+    for(i=0; i<dim1; i++){
         free(mat[i]);
     }
     free(mat);
 }
 
-// Calculate and output the Weighted Adjacency Matrix
+/* Calculate and output the Weighted Adjacency Matrix*/
 double** wam_func(double** data_matrix, int n, int dim2){
     double** weight_mat;
     int i, j;
     if(data_matrix==NULL){
         return NULL;
     }
-    //create matrix
+    /*create matrix*/
     weight_mat = matrix_maker(n,n);
     if(weight_mat==NULL){
         return NULL;
     }
-    // calculate weights
+    /* calculate weights*/
     for(i=0; i<n; i++){
         for(j=0; j<n; j++){
             if(i!=j){
@@ -65,7 +67,7 @@ double** wam_func(double** data_matrix, int n, int dim2){
     return weight_mat;
 }
 
-// Calculate and output the Diagonal Degree Matrix
+/*Calculate and output the Diagonal Degree Matrix*/
  double** ddg_func( double** weight_mat, int n){
     double **diag_degree_mat;
     int i, j;
@@ -74,14 +76,14 @@ double** wam_func(double** data_matrix, int n, int dim2){
         return NULL;
     }
 
-    //create matrix
+    /*create matrix*/
     diag_degree_mat = matrix_maker(n,n);
     if(diag_degree_mat==NULL){
         free_matrix(weight_mat, n);
         return NULL;
     }
 
-    //create diagonal mat
+    /*create diagonal mat*/
     for(i=0; i<n; i++){
         for (j=0; j<n; j++){
             diag_degree_mat[i][i] = diag_degree_mat[i][i]+ weight_mat[i][j];
@@ -92,7 +94,7 @@ double** wam_func(double** data_matrix, int n, int dim2){
  }
 
 
-//Calculate and output the Graph Laplacian
+/*Calculate and output the Graph Laplacian*/
 double** gl_func(double** weight_mat, double** diag_degree_mat, int n){
     double **laplacian_mat;
     int i, j;
@@ -103,7 +105,7 @@ double** gl_func(double** weight_mat, double** diag_degree_mat, int n){
     if(diag_degree_mat==NULL){
         return NULL;
     }
-    //create output matrix 
+    /*create output matrix*/
     laplacian_mat = matrix_maker(n,n);
     if(laplacian_mat==NULL){
         free_matrix(diag_degree_mat, n);
@@ -121,8 +123,9 @@ double** gl_func(double** weight_mat, double** diag_degree_mat, int n){
 
 /* get symmetric matrix A and return The i,j  for Aij is the off-diagonal element with the largest absolute value.*/
 int* pivot_func(double** A, int n){
-    double index[2];
+    int *index;
     int i, j,max = 0;
+    index = malloc(2*sizeof(int));
     for(i=0; i<n; i++){
          for (j=i+1; j<n; j++){
             if(abs(A[i][j])>max){
@@ -132,6 +135,7 @@ int* pivot_func(double** A, int n){
             }
         }
     }
+
     return index;
 }
 
@@ -167,37 +171,40 @@ double** calculate_A_tag_matrix(double** A, int n, double c, double s, int index
 
     
     for(r=0; r<n; r++){
-        //replace row and col index_i
+        /*replace row and col index_i*/
         A[index_i][r] = A_tag_coli[r];
         A[r][index_i] = A_tag_coli[r];
-        //replace row and col index_j
+        /*replace row and col index_j*/
         A[index_j][r] = A_tag_colj[r];
         A[r][index_j] = A_tag_colj[r];
     }
 
    free(A_tag_coli);
+
    free(A_tag_colj);
 
     return A;
 }
 
-//returns V*P^i
+/*returns V*P^i*/
 double** calculate_new_V_matrix(double** V_matrix, int n, double c, double s, int index_i, int index_j){
-    // double **rotation_mat;
-    // int i;
+    /*
+    double **rotation_mat;
+    int i;
 
-    // rotation_mat = matrix_maker(n,n);
-    // if(rotation_mat==NULL){
-    //     return NULL;
-    // }
+    rotation_mat = matrix_maker(n,n);
+    if(rotation_mat==NULL){
+        return NULL;
+    }
 
-    // for(i=0;i<n;i++){
-    //         rotation_mat[i][i] = 1;
-    // }
-    // rotation_mat[index_i][index_i] = c;
-    // rotation_mat[index_j][index_j] = c;
-    // rotation_mat[index_i][index_j] = s;
-    // rotation_mat[index_j][index_i] = -s;
+    for(i=0;i<n;i++){
+            rotation_mat[i][i] = 1;
+    }
+    rotation_mat[index_i][index_i] = c;
+    rotation_mat[index_j][index_j] = c;
+    rotation_mat[index_i][index_j] = s;
+    rotation_mat[index_j][index_i] = -s;
+    */
 
     double Vri, Vrj;
     int r;
@@ -229,7 +236,7 @@ double off_func(double **A, int n){
 */
 double** jacobi_func(double** A, int n){
     int *pivot;
-    int r,sign_theta,index_i,index_j, cnt_num_rotation=0,i,j;
+    int sign_theta,index_i,index_j, cnt_num_rotation=0,i,j;
     double theta, s ,c ,t ,convergence, off_A, EPSILON=0.00001;
     double **V_matrix , **res_matrix;
     
@@ -237,17 +244,17 @@ double** jacobi_func(double** A, int n){
         return NULL;
     }
     
-    //create V_matrix 
+    /*create V_matrix */
     V_matrix = matrix_maker(n,n);
     if(V_matrix==NULL){
         return NULL;
     }
-    //initialize V matrix as unit matrix
+    /*initialize V matrix as unit matrix*/
     for(i=0;i<n;i++){
             V_matrix[i][i] = 1;
     }
     
-    //create res_matrix 
+    /*create res_matrix */
     res_matrix = matrix_maker(n+1,n);
     if(res_matrix==NULL){
         free_matrix(V_matrix, n);
@@ -255,14 +262,14 @@ double** jacobi_func(double** A, int n){
     }
 
     
-    //We will be using EPSILON = 1.0 × 10−5 OR maximum number of rotations = 100 
+    /*We will be using EPSILON = 1.0 × 10−5 OR maximum number of rotations = 100 */
     while((cnt_num_rotation < 100) && (convergence>EPSILON)){
         off_A = off_func(A, n);
         pivot = pivot_func(A,n);
         index_i = pivot[0];
         index_j = pivot[1];
         theta= (A[index_j][index_j]-A[index_i][index_i])/(2*A[index_i][index_j]);
-        //check this calc
+        /*check this calc*/
         sign_theta = (theta >= 0) - (theta < 0);
         t = sign_theta / (abs(theta)+pow((theta*theta+1), 0.5));
         c = 1 / pow((t*t+1), 0.5);
@@ -277,10 +284,11 @@ double** jacobi_func(double** A, int n){
          }
         convergence = off_A - off_func(A, n);
         cnt_num_rotation++;
+        free(pivot);
 
     }
     
-    //first row will be the eigenvalues, and than each col is the eigenvectors 
+    /*first row will be the eigenvalues, and than each col is the eigenvectors */
     for(i=0; i<n; i++){
         res_matrix[0][i] = A[i][i];
     }
@@ -295,7 +303,36 @@ double** jacobi_func(double** A, int n){
     return res_matrix;
 }
 
-//get the goal and return the matrix
+
+double** non_neg_zero(double** mat, int n, int is_jacobi){
+    int i,j;
+    if(mat==NULL){
+        return NULL;
+    }
+
+    if (is_jacobi==0){
+        for(i=0; i<n; i++){
+            for (j=0; j<n; j++){
+                if(mat[i][j]==0){
+                   mat[i][j]= 0;
+                }  
+            }
+        }
+    }
+    else{
+        for(i=0; i<n+1; i++){
+            for (j=0; j<n; j++){
+                if(mat[i][j]==0){
+                   mat[i][j]= 0;
+                }
+             }  
+        }
+    }
+    return mat;
+}
+
+
+/*get the goal and return the matrix*/
  double** wrapper(double** data_matrix, int n,int dim2,char * goal){
     double **wam_mat, **ddg_mat, **gl_mat, **jacobi_mat;
     int is_jacobi=0;
@@ -336,6 +373,7 @@ double** jacobi_func(double** A, int n){
         jacobi_mat= non_neg_zero(jacobi_mat,n,is_jacobi);
         return jacobi_mat;
     }
+    return NULL;
 
     
  }
@@ -362,31 +400,6 @@ void print_matrix(double **goal_mat, int n,int is_jacobi){
 }
 
 
-double** non_neg_zero(double** mat,int n,int is_jacobi){
-    int i,j;
-    if(mat==NULL){
-        return NULL;
-    }
-
-    if (is_jacobi==0){
-        for(i=0; i<n; i++){
-            for (j=0; j<n; j++){
-                if(mat[i][j]==0){
-                   mat[i][j]= 0;
-                }  
-            }
-        }
-    }
-    else{
-       { for(i=0; i<n+1; i++)
-            if(mat[i][j]==0){
-                   mat[i][j]= 0;
-            }  
-        }
-    }
-    return mat;
-}
-
 
 
 int main(int argc, char *argv[])
@@ -395,12 +408,14 @@ int main(int argc, char *argv[])
     char *goal ,*file_name, ch, c;
     int is_jacobi, i=0 ,j=0 ,n=0 ,dim2=1;
     FILE *pf;
-
+    if(argc!=3){
+        printf("An Error Has Occurred");
+        return 0;
+    }
     goal = argv[1];
     file_name =  argv[2];
 
-    //building data_matrix
-    
+    /*building data_matrix*/
     
     pf = fopen (file_name, "r");
     if (pf == NULL){
@@ -451,7 +466,7 @@ int main(int argc, char *argv[])
     fclose (pf); 
     
 
-    //print output
+    /*print output*/
     goal_mat = wrapper( data_matrix ,n , dim2, goal);
     if(goal_mat==NULL){
         printf("An Error Has Occurred");

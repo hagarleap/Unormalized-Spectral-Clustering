@@ -9,6 +9,7 @@ todo on thursday:
 **RELEASE MEMORY***
 ** REMEMBER ; *****
 
+23.3.23
 to finish the spkmeans.c:
 create a main func to get command line arguments
   -create data matrix
@@ -20,3 +21,6 @@ within the wrapper function, create function that will print the correct output
 
 
 
+
+
+gcc -ansi -Wall -Wextra -Werror -pedantic-errors spkmeans.c -o spkmeans -lm
