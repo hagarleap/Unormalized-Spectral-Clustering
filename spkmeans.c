@@ -296,8 +296,8 @@ double** jacobi_func(double** A, int n){
 }
 
 //get the goal and return the matrix
- double** wrapper(double** data_matrix, int n,,int dim2,char * goal){
-    double **wam_mat, **ddg_mat,**gl_mat,**jacobi_mat ;
+ double** wrapper(double** data_matrix, int n,int dim2,char * goal){
+    double **wam_mat, **ddg_mat, **gl_mat, **jacobi_mat;
     int is_jacobi=0;
     if (!strcmp(goal,"wam"))
     {
@@ -307,16 +307,16 @@ double** jacobi_func(double** A, int n){
     }
     else if (!strcmp(goal,"ddg"))
     {
-        wam_mat = wam_func( data_matrix,n, dim2);
-        ddg_mat = ddg_func( wam_mat, n);
+        wam_mat = wam_func(data_matrix,n, dim2);
+        ddg_mat = ddg_func(wam_mat, n);
         free_matrix(wam_mat,n);
         ddg_mat= non_neg_zero(ddg_mat,n,is_jacobi);
         return ddg_mat;
     }
     else if (!strcmp(goal,"gl"))
     {
-        wam_mat = wam_func( data_matrix,n, dim2);
-        ddg_mat = ddg_func(  wam_mat, n);
+        wam_mat = wam_func(data_matrix,n, dim2);
+        ddg_mat = ddg_func(wam_mat, n);
         gl_mat = gl_func(wam_mat, ddg_mat, n);
         free_matrix(wam_mat,n);
         free_matrix(ddg_mat,n);
@@ -346,7 +346,7 @@ void print_matrix(double **goal_mat, int n,int is_jacobi){
     if (is_jacobi==0){
         for(i=0; i<n; i++){
             for (j=0; j<n-1; j++){
-                printf("%.4f,",  goal_mat[i][j])  
+                printf("%.4f,",  goal_mat[i][j]);  
             }
         printf("%.4f\n", goal_mat[i][j]);
         }
@@ -354,7 +354,7 @@ void print_matrix(double **goal_mat, int n,int is_jacobi){
     else{
        { for(i=0; i<n+1; i++)
             for (j=0; j<n-1; j++){
-                printf("%.4f,",  goal_mat[i][j])  
+                printf("%.4f,",  goal_mat[i][j]);  
             }
         printf("%.4f\n", goal_mat[i][j]); 
         }
@@ -391,17 +391,22 @@ double** non_neg_zero(double** mat,int n,int is_jacobi){
 
 int main(int argc, char *argv[])
 {
-    double **goal_mat, **data_matrix;
-    char *goal ,*file_name;
+    double **goal_mat, **data_matrix, num;
+    char *goal ,*file_name, ch, c;
     int is_jacobi, i=0 ,j=0 ,n=0 ,dim2=1;
+    FILE *pf;
+
     goal = argv[1];
     file_name =  argv[2];
 
-    //biluding data_matrix
+    //building data_matrix
     
-
-    FILE *pf;
+    
     pf = fopen (file_name, "r");
+    if (pf == NULL){
+        printf("An Error Has Occurred");
+        return 0;
+    }
 
     /* figure out n */
     while((ch=fgetc(pf))!=EOF) 
@@ -412,6 +417,7 @@ int main(int argc, char *argv[])
         }
     }
     rewind(pf);
+    
     /* figure out dim2 */
     while((ch=fgetc(pf))!='\n') 
     {
@@ -425,12 +431,9 @@ int main(int argc, char *argv[])
 
     data_matrix = matrix_maker(n,dim2);
     if(data_matrix==NULL){
-        return NULL;
-    }
-    if (pf == NULL){
         printf("An Error Has Occurred");
+        return 0;
     }
-    
 
     while (scanf("%lf%c", &num, &c) == 2)
     {        
