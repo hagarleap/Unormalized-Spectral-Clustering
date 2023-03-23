@@ -201,7 +201,18 @@ double** calculate_new_V_matrix(double** V_matrix, int n, double c, double s, in
     return V_matrix;
 }
 
-void off_func(){}
+double off_func(double **A, int n){
+    int i, j;
+    double res;
+    for(i=0; i<n; i++){
+         for (j=0; j<n; j++){
+            if(i!=j){
+               res = res + pow(A[i][j], 2); 
+            } 
+         }
+    }
+    return res;
+}
 
  /*recieve symmetric matrix A and return the e eigenvalues and eigenvectors of a real A
  when A = laplacian_mat 
@@ -234,7 +245,7 @@ double** jacobi_func(double** A, int n){
     
     //We will be using EPSILON = 1.0 × 10−5 OR maximum number of rotations = 100 
     while((cnt_num_rotation < 100) && (convergence>EPSILON)){
-       // off_A = off_func(A);
+        off_A = off_func(A, n);
         pivot = pivot_func(A,n);
         index_i = pivot[0];
         index_j = pivot[1];
@@ -252,7 +263,7 @@ double** jacobi_func(double** A, int n){
         if(V_matrix==NULL){
             return NULL;
          }
-        convergence = off_A -off_func(A);
+        convergence = off_A - off_func(A, n);
         cnt_num_rotation++;
 
     }
@@ -268,7 +279,7 @@ double** jacobi_func(double** A, int n){
         }
     }
 
-    free_matrix(V_matrix);
+    free_matrix(V_matrix, n);
     return res_matrix;
 }
 
