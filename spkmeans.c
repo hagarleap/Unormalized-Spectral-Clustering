@@ -112,7 +112,7 @@ double** gl_func(double** weight_mat, double** diag_degree_mat, int n){
 /* get symmetric matrix A and return The i,j  for Aij is the off-diagonal element with the largest absolute value.*/
 int* pivot_func(double** A, int n){
     double index[2];
-    int i ,max = 0;
+    int i, j,max = 0;
     for(i=0; i<n; i++){
          for (j=i+1; j<n; j++){
             if(abs(A[i][j])>max){
@@ -126,8 +126,9 @@ int* pivot_func(double** A, int n){
 }
 
 /* get matrix A and pivot indexes and return the A'*/
-double** calculate_A_tag_matrix(double** A, int n, double c, double s){
+double** calculate_A_tag_matrix(double** A, int n, double c, double s, int index_i, int index_j){
     double *A_tag_coli, *A_tag_colj;
+    int r;
     
 
     A_tag_coli = calloc(n, sizeof(double));
@@ -170,17 +171,45 @@ double** calculate_A_tag_matrix(double** A, int n, double c, double s){
     return A;
 }
 
+//returns V*P^i
+double** calculate_new_V_matrix(double** V_matrix, int n, double c, double s, int index_i, int index_j){
+    // double **rotation_mat;
+    // int i;
 
-calculate_new_V_matrix
-off_func
+    // rotation_mat = matrix_maker(n,n);
+    // if(rotation_mat==NULL){
+    //     return NULL;
+    // }
 
- /* get symmetric matrix A and return the e eigenvalues and eigenvectors of a real A
+    // for(i=0;i<n;i++){
+    //         rotation_mat[i][i] = 1;
+    // }
+    // rotation_mat[index_i][index_i] = c;
+    // rotation_mat[index_j][index_j] = c;
+    // rotation_mat[index_i][index_j] = s;
+    // rotation_mat[index_j][index_i] = -s;
+
+    double Vri, Vrj;
+    int r;
+    for(r=0;r<n;r++){
+        Vri=V_matrix[r][index_i];
+        Vrj=V_matrix[r][index_j];
+
+        V_matrix[r][index_i] = Vri*c - s*Vrj;
+        V_matrix[r][index_j] = Vrj*c + s*Vri;
+    }
+    return V_matrix;
+}
+
+void off_func(){}
+
+ /*recieve symmetric matrix A and return the e eigenvalues and eigenvectors of a real A
  when A = laplacian_mat 
 */
 double** jacobi_func(double** A, int n){
-    int pivot[2];
+    int *pivot;
     int r,sign_theta,index_i,index_j, cnt_num_rotation=0,i,j;
-    double theta, s ,c ,t ,convergence, off_A;
+    double theta, s ,c ,t ,convergence, off_A, EPSILON=0.00001;
     double **V_matrix , **res_matrix;
     
     
@@ -190,18 +219,22 @@ double** jacobi_func(double** A, int n){
     if(V_matrix==NULL){
         return NULL;
     }
-
-    //create V_matrix 
+    //initialize V matrix as unit matrix
+    for(i=0;i<n;i++){
+            V_matrix[i][i] = 1;
+    }
+    
+    //create res_matrix 
     res_matrix = matrix_maker(n+1,n);
     if(res_matrix==NULL){
-        free_matrix(V_matrix);
+        free_matrix(V_matrix, n);
         return NULL;
     }
 
     
     //We will be using EPSILON = 1.0 × 10−5 OR maximum number of rotations = 100 
     while((cnt_num_rotation < 100) && (convergence>EPSILON)){
-        off_A = off_func(A);
+       // off_A = off_func(A);
         pivot = pivot_func(A,n);
         index_i = pivot[0];
         index_j = pivot[1];
@@ -211,8 +244,14 @@ double** jacobi_func(double** A, int n){
         t = sign_theta / (abs(theta)+pow((theta*theta+1), 0.5));
         c = 1 / pow((t*t+1), 0.5);
         s = t*c;
-        A = calculate_A_tag_matrix(A , n, c, s);
-        V_matrix = calculate_new_V_matrix(V_matrix, n, c, s );
+        A = calculate_A_tag_matrix(A , n, c, s, index_i, index_j);
+        if(A==NULL){
+            return NULL;
+        } 
+        V_matrix = calculate_new_V_matrix(V_matrix, n, c, s, index_i, index_j);
+        if(V_matrix==NULL){
+            return NULL;
+         }
         convergence = off_A -off_func(A);
         cnt_num_rotation++;
 
