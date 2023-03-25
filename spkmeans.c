@@ -6,18 +6,25 @@
 /*returns matrix of zeros*/
 double** matrix_maker(int dim1, int dim2){
     double **mat;
-    int i;
-    mat = malloc(dim1*sizeof(double*));
+    int i,j;
+    mat = (double**)malloc(dim1*sizeof(double*));
     if(mat==NULL){
         return NULL;
     }
     for(i=0; i<dim1; i++){
-        mat[i] = calloc(dim2, sizeof(double));
+        mat[i] = (double*)malloc(dim2*sizeof(double));
         if(mat==NULL){
             return NULL;
-        }        
+        }      
     }
-    return mat;
+
+    for(i=0; i<dim1; i++){
+        for(j=0;j<dim2;j++){
+            mat[i][j]=0;
+        }
+    }
+      
+    return mat; 
 }
 
 /*Recives 2 vectors. Returns the euclidian distance between them*/
@@ -46,6 +53,7 @@ void free_matrix(double** mat, int dim1){
 /* Calculate and output the Weighted Adjacency Matrix*/
 double** wam_func(double** data_matrix, int n, int dim2){
     double** weight_mat;
+    double euc, sum;
     int i, j;
     if(data_matrix==NULL){
         return NULL;
@@ -59,7 +67,9 @@ double** wam_func(double** data_matrix, int n, int dim2){
     for(i=0; i<n; i++){
         for(j=0; j<n; j++){
             if(i!=j){
-                weight_mat[i][j] = exp(-(Squared_Euclidean_distance(data_matrix[i], data_matrix[j], dim2))/2);
+                sum = Squared_Euclidean_distance(data_matrix[i], data_matrix[j], dim2);
+                euc = exp((-0.5)*(sum));
+                weight_mat[i][j] = euc;
             }
     
         }
@@ -188,12 +198,17 @@ double** calculate_A_tag_matrix(double** A, int n, double c, double s, int index
 
 /*returns V*P^i*/
 double** calculate_new_V_matrix(double** V_matrix, int n, double c, double s, int index_i, int index_j){
-    /*
-    double **rotation_mat;
-    int i;
+    
+    double **rotation_mat, **new_V;
+    int i,x,y,k;
 
     rotation_mat = matrix_maker(n,n);
     if(rotation_mat==NULL){
+        return NULL;
+    }
+    new_V = matrix_maker(n,n);
+    if(new_V==NULL){
+        free_matrix(rotation_mat,n);
         return NULL;
     }
 
@@ -204,9 +219,26 @@ double** calculate_new_V_matrix(double** V_matrix, int n, double c, double s, in
     rotation_mat[index_j][index_j] = c;
     rotation_mat[index_i][index_j] = s;
     rotation_mat[index_j][index_i] = -s;
-    */
 
-    double Vri, Vrj;
+    for (x = 0; x < n; x++)
+        for (y = 0; y < n; y++)
+        {
+            new_V[x][y] = 0;
+            for (k = 0; k < n; k++)
+                new_V[x][y] += V_matrix[x][k] * rotation_mat[k][y];
+        }
+
+    for (x = 0; x < n; x++){
+        for (y = 0; y < n; y++){
+            V_matrix[x][y] = new_V[x][y];
+        }
+            
+    }
+    free_matrix(new_V,n);
+    return V_matrix;
+        
+   
+/*double Vri, Vrj;
     int r;
     for(r=0;r<n;r++){
         Vri=V_matrix[r][index_i];
@@ -215,7 +247,8 @@ double** calculate_new_V_matrix(double** V_matrix, int n, double c, double s, in
         V_matrix[r][index_i] = Vri*c - s*Vrj;
         V_matrix[r][index_j] = Vrj*c + s*Vri;
     }
-    return V_matrix;
+    return V_matrix;*/
+    
 }
 
 double off_func(double **A, int n){
@@ -331,6 +364,16 @@ double** non_neg_zero(double** mat, int n, int is_jacobi){
     return mat;
 }
 
+void print_matrix(double **goal_mat, int n,int d){
+    int i,j;
+        for(i=0; i<n; i++){
+            for (j=0; j<d-1; j++){
+                printf("%.4f,",  goal_mat[i][j]);  
+            }
+        printf("%.4f\n", goal_mat[i][j]);
+        }
+}
+
 
 /*get the goal and return the matrix*/
  double** wrapper(double** data_matrix, int n,int dim2,char * goal){
@@ -362,8 +405,8 @@ double** non_neg_zero(double** mat, int n, int is_jacobi){
     }
     else if (!strcmp(goal,"jacobi"))
     {
-        wam_mat = wam_func( data_matrix, n, dim2);
-        ddg_mat = ddg_func(   wam_mat, n);
+        wam_mat = wam_func(data_matrix, n, dim2);
+        ddg_mat = ddg_func(wam_mat, n);
         gl_mat = gl_func(wam_mat, ddg_mat, n);
         jacobi_mat = jacobi_func(gl_mat, n);
         free_matrix(wam_mat,n);
@@ -373,39 +416,18 @@ double** non_neg_zero(double** mat, int n, int is_jacobi){
         jacobi_mat= non_neg_zero(jacobi_mat,n,is_jacobi);
         return jacobi_mat;
     }
+    free_matrix(data_matrix, n); /*check its not an issue with python API*/
     return NULL;
 
-    
  }
-
-
-void print_matrix(double **goal_mat, int n,int is_jacobi){
-    int i,j;
-    if (is_jacobi==0){
-        for(i=0; i<n; i++){
-            for (j=0; j<n-1; j++){
-                printf("%.4f,",  goal_mat[i][j]);  
-            }
-        printf("%.4f\n", goal_mat[i][j]);
-        }
-    }
-    else{
-       { for(i=0; i<n+1; i++)
-            for (j=0; j<n-1; j++){
-                printf("%.4f,",  goal_mat[i][j]);  
-            }
-        printf("%.4f\n", goal_mat[i][j]); 
-        }
-    }
-}
-
-
 
 
 int main(int argc, char *argv[])
 {
-    double **goal_mat, **data_matrix, num;
-    char *goal ,*file_name, ch, c;
+    double **goal_mat, **data_matrix;
+    double num;
+    char *goal ,*file_name;
+    char ch, c;
     int is_jacobi, i=0 ,j=0 ,n=0 ,dim2=1;
     FILE *pf;
     if(argc!=3){
@@ -417,7 +439,7 @@ int main(int argc, char *argv[])
 
     /*building data_matrix*/
     
-    pf = fopen (file_name, "r");
+    pf = fopen(file_name, "r");
     if (pf == NULL){
         printf("An Error Has Occurred");
         return 0;
@@ -432,7 +454,7 @@ int main(int argc, char *argv[])
         }
     }
     rewind(pf);
-    
+
     /* figure out dim2 */
     while((ch=fgetc(pf))!='\n') 
     {
@@ -449,37 +471,35 @@ int main(int argc, char *argv[])
         printf("An Error Has Occurred");
         return 0;
     }
-
-    while (scanf("%lf%c", &num, &c) == 2)
-    {        
-        if (c == '\n')
+    
+    while(fscanf(pf, "%lf%c", &num, &c) == 2)
+    {
+        if(c == '\n')
         {
             data_matrix[i][j]=num;
             j=0;
             i++;
         }
         else{
-            j++;
             data_matrix[i][j]=num;
+            j++;
         }
     }
     fclose (pf); 
-    
 
     /*print output*/
-    goal_mat = wrapper( data_matrix ,n , dim2, goal);
+    goal_mat = wrapper(data_matrix ,n , dim2, goal);
     if(goal_mat==NULL){
         printf("An Error Has Occurred");
         return 0;
     }
 
     if (!strcmp(goal,"jacobi")){
-        is_jacobi = 1;
-        print_matrix(goal_mat,n, is_jacobi);
+        print_matrix(goal_mat,n+1, n);
+        n++; /*because jacobi has n+1 rows, need this for free_matrix*/
     }
-    else{
-        is_jacobi = 0;
-        print_matrix(goal_mat,n, is_jacobi);
+    else{ /*for wam, ddg, gl*/
+        print_matrix(goal_mat,n,n);
     }
 
     free_matrix(goal_mat,n);
