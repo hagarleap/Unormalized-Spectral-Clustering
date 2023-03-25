@@ -315,9 +315,12 @@ double** jacobi_func(double** A, int n){
         index_j = pivot[1];
         theta= (A[index_j][index_j]-A[index_i][index_i])/(2*A[index_i][index_j]);
         /*check this calc*/
+
+     
         sign_theta = (theta>=0.0) ? 1.0: -1.0;
-        t= sign_theta / (fabs(theta) + sqrt(theta * theta + 1));
-        c =1 / (sqrt(t * t + 1));
+    
+        t= (double)(sign_theta / (fabs(theta) + sqrt(pow(theta, 2) + 1)));
+        c =(double)(1 / (sqrt(pow(t, 2) + 1)));
         s = t*c;
         A = calculate_A_tag_matrix(A , n, c, s, index_i, index_j);
 
@@ -410,7 +413,6 @@ double** non_neg_zero(double** mat, int n, int is_jacobi){
     {
         jacobi_mat = jacobi_func(data_matrix, n);
         is_jacobi=1;
-        print_matrix(jacobi_mat,n,n);
         jacobi_mat= non_neg_zero(jacobi_mat,n,is_jacobi);
         return jacobi_mat;
     }
