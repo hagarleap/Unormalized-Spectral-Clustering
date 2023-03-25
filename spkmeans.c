@@ -3,6 +3,16 @@
 #include <stdio.h>
 #include <string.h>
 
+void print_matrix(double **goal_mat, int n,int d){
+    int i,j;
+        for(i=0; i<n; i++){
+            for (j=0; j<d-1; j++){
+                printf("%.4f,",  goal_mat[i][j]);  
+            }
+        printf("%.4f\n", goal_mat[i][j]);
+        }
+}
+
 /*returns matrix of zeros*/
 double** matrix_maker(int dim1, int dim2){
     double **mat;
@@ -273,6 +283,7 @@ double** jacobi_func(double** A, int n){
     double theta, s ,c ,t ,convergence, off_A, EPSILON=0.00001;
     double **V_matrix , **res_matrix;
     
+    
     if(A==NULL){
         return NULL;
     }
@@ -364,16 +375,6 @@ double** non_neg_zero(double** mat, int n, int is_jacobi){
     return mat;
 }
 
-void print_matrix(double **goal_mat, int n,int d){
-    int i,j;
-        for(i=0; i<n; i++){
-            for (j=0; j<d-1; j++){
-                printf("%.4f,",  goal_mat[i][j]);  
-            }
-        printf("%.4f\n", goal_mat[i][j]);
-        }
-}
-
 
 /*get the goal and return the matrix*/
  double** wrapper(double** data_matrix, int n,int dim2,char * goal){
@@ -406,8 +407,11 @@ void print_matrix(double **goal_mat, int n,int d){
     else if (!strcmp(goal,"jacobi"))
     {
         wam_mat = wam_func(data_matrix, n, dim2);
+        print_matrix(wam_mat, n, n);
         ddg_mat = ddg_func(wam_mat, n);
+        print_matrix(ddg_mat, n, n);
         gl_mat = gl_func(wam_mat, ddg_mat, n);
+        print_matrix(gl_mat, n, n);
         jacobi_mat = jacobi_func(gl_mat, n);
         free_matrix(wam_mat,n);
         free_matrix(ddg_mat,n);
@@ -486,7 +490,7 @@ int main(int argc, char *argv[])
         }
     }
     fclose (pf); 
-
+    print_matrix(data_matrix, n, dim2);
     /*print output*/
     goal_mat = wrapper(data_matrix ,n , dim2, goal);
     if(goal_mat==NULL){
