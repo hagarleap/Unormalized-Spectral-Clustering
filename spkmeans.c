@@ -183,8 +183,8 @@ double** calculate_A_tag_matrix(double** A, int n, double c, double s, int index
         } 
              
     }
-    A_tag_coli[index_i] = c*c*(A[index_i][index_i]) + s*s*(A[index_j][index_j]) - 2*s*c*(A[index_i][index_j]);
-    A_tag_colj[index_j] = s*s*(A[index_i][index_i]) + c*c*(A[index_j][index_j]) + 2*s*c*(A[index_i][index_j]);
+    A_tag_coli[index_i] = pow(c, 2)*(A[index_i][index_i]) + pow(s, 2)*(A[index_j][index_j]) - 2*s*c*(A[index_i][index_j]);
+    A_tag_colj[index_j] = pow(s, 2)*(A[index_i][index_i]) + pow(c, 2)*(A[index_j][index_j]) + 2*s*c*(A[index_i][index_j]);
     A_tag_coli[index_j] = 0;
     A_tag_colj[index_i] = 0;
 
@@ -278,8 +278,8 @@ double off_func(double **A, int n){
 */
 double** jacobi_func(double** A, int n){
     int *pivot;
-    int sign_theta,index_i,index_j, cnt_num_rotation=0,i,j;
-    double theta, s ,c ,t ,convergence=1, off_A, EPSILON=0.00001;
+    int index_i,index_j, cnt_num_rotation=0,i,j;
+    double theta,sign_theta, s ,c ,t ,convergence=1, off_A, EPSILON=pow(10,-5);
     double **V_matrix , **res_matrix;
     
     
@@ -304,9 +304,10 @@ double** jacobi_func(double** A, int n){
         return NULL;
     }
 
-    
+
     /*We will be using EPSILON = 1.0 × 10−5 OR maximum number of rotations = 100 */
-    while((cnt_num_rotation < 100) && (convergence>EPSILON)){
+     while((cnt_num_rotation < 100) && (convergence>EPSILON)){ 
+     
         off_A = off_func(A, n);
         pivot = pivot_func(A,n);
         index_i = pivot[0];
