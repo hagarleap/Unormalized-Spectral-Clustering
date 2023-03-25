@@ -19,7 +19,9 @@ within the wrapper function, create function that will print the correct output
 
   **ask if we need eigenvalues separated by comma
 
-
+25.3.23
+make sure all memory is freed
+fix the case where eigenvalue == -0.0000
 
 
 

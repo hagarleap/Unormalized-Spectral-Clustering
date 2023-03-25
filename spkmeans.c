@@ -144,7 +144,8 @@ double** gl_func(double** weight_mat, double** diag_degree_mat, int n){
 /* get symmetric matrix A and return The i,j  for Aij is the off-diagonal element with the largest absolute value.*/
 int* pivot_func(double** A, int n){
     int *index;
-    int i, j,max = 0;
+    int i, j;
+    double max = 0;
     index = malloc(2*sizeof(int));
     for(i=0; i<n; i++){
          for (j=i+1; j<n; j++){
@@ -279,7 +280,7 @@ double off_func(double **A, int n){
 double** jacobi_func(double** A, int n){
     int *pivot;
     int index_i,index_j, cnt_num_rotation=0,i,j;
-    double theta,sign_theta, s ,c ,t ,convergence=1, off_A, EPSILON=pow(10,-5);
+    double theta,sign_theta, s ,c ,t ,convergence=1, off_A, EPSILON=0.00001;
     double **V_matrix , **res_matrix;
     
     
@@ -294,7 +295,7 @@ double** jacobi_func(double** A, int n){
     }
     /*initialize V matrix as unit matrix*/
     for(i=0;i<n;i++){
-            V_matrix[i][i] = 1;
+            V_matrix[i][i] = 1.0;
     }
     
     /*create res_matrix */
@@ -314,7 +315,7 @@ double** jacobi_func(double** A, int n){
         index_j = pivot[1];
         theta= (A[index_j][index_j]-A[index_i][index_i])/(2*A[index_i][index_j]);
         /*check this calc*/
-        sign_theta = (theta >= 0) - (theta < 0);
+        sign_theta = (theta>=0.0) ? 1.0: -1.0;
         t= sign_theta / (fabs(theta) + sqrt(theta * theta + 1));
         c =1 / (sqrt(t * t + 1));
         s = t*c;
@@ -409,6 +410,7 @@ double** non_neg_zero(double** mat, int n, int is_jacobi){
     {
         jacobi_mat = jacobi_func(data_matrix, n);
         is_jacobi=1;
+        print_matrix(jacobi_mat,n,n);
         jacobi_mat= non_neg_zero(jacobi_mat,n,is_jacobi);
         return jacobi_mat;
     }
