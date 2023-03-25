@@ -148,8 +148,8 @@ int* pivot_func(double** A, int n){
     index = malloc(2*sizeof(int));
     for(i=0; i<n; i++){
          for (j=i+1; j<n; j++){
-            if(abs(A[i][j])>max){
-                max = A[i][j];
+            if(fabs(A[i][j])>max){
+                max = fabs(A[i][j]);
                 index[0] = i;
                 index[1] = j;
             }
@@ -176,7 +176,6 @@ double** calculate_A_tag_matrix(double** A, int n, double c, double s, int index
             return NULL;
         }    
 
-   
     for(r=0; r<n; r++){
         if(r!=index_i && r!=index_j){
             A_tag_coli[r] = c*(A[r][index_i]) - s*(A[r][index_j]);
@@ -263,7 +262,7 @@ double** calculate_new_V_matrix(double** V_matrix, int n, double c, double s, in
 
 double off_func(double **A, int n){
     int i, j;
-    double res;
+    double res=0;
     for(i=0; i<n; i++){
          for (j=0; j<n; j++){
             if(i!=j){
@@ -280,7 +279,7 @@ double off_func(double **A, int n){
 double** jacobi_func(double** A, int n){
     int *pivot;
     int sign_theta,index_i,index_j, cnt_num_rotation=0,i,j;
-    double theta, s ,c ,t ,convergence, off_A, EPSILON=0.00001;
+    double theta, s ,c ,t ,convergence=1, off_A, EPSILON=0.00001;
     double **V_matrix , **res_matrix;
     
     
@@ -315,10 +314,11 @@ double** jacobi_func(double** A, int n){
         theta= (A[index_j][index_j]-A[index_i][index_i])/(2*A[index_i][index_j]);
         /*check this calc*/
         sign_theta = (theta >= 0) - (theta < 0);
-        t = sign_theta / (abs(theta)+pow((theta*theta+1), 0.5));
-        c = 1 / pow((t*t+1), 0.5);
+        t= sign_theta / (fabs(theta) + sqrt(theta * theta + 1));
+        c =1 / (sqrt(t * t + 1));
         s = t*c;
         A = calculate_A_tag_matrix(A , n, c, s, index_i, index_j);
+
         if(A==NULL){
             return NULL;
         } 
@@ -406,16 +406,7 @@ double** non_neg_zero(double** mat, int n, int is_jacobi){
     }
     else if (!strcmp(goal,"jacobi"))
     {
-        wam_mat = wam_func(data_matrix, n, dim2);
-        print_matrix(wam_mat, n, n);
-        ddg_mat = ddg_func(wam_mat, n);
-        print_matrix(ddg_mat, n, n);
-        gl_mat = gl_func(wam_mat, ddg_mat, n);
-        print_matrix(gl_mat, n, n);
-        jacobi_mat = jacobi_func(gl_mat, n);
-        free_matrix(wam_mat,n);
-        free_matrix(ddg_mat,n);
-        free_matrix(gl_mat,n);
+        jacobi_mat = jacobi_func(data_matrix, n);
         is_jacobi=1;
         jacobi_mat= non_neg_zero(jacobi_mat,n,is_jacobi);
         return jacobi_mat;
@@ -490,7 +481,7 @@ int main(int argc, char *argv[])
         }
     }
     fclose (pf); 
-    print_matrix(data_matrix, n, dim2);
+   
     /*print output*/
     goal_mat = wrapper(data_matrix ,n , dim2, goal);
     if(goal_mat==NULL){
