@@ -23,9 +23,7 @@ double** matrix_maker(int dim1, int dim2){
     }
     for(i=0; i<dim1; i++){
         mat[i] = (double*)malloc(dim2*sizeof(double));
-        if(mat==NULL){
-            return NULL;
-        }      
+          
     }
 
     for(i=0; i<dim1; i++){
@@ -279,7 +277,7 @@ double off_func(double **A, int n){
 */
 double** jacobi_func(double** A, int n){
     int *pivot;
-    int index_i,index_j, cnt_num_rotation=0,i,j;
+    int index_i,index_j, cnt_num_rotation=0,i,j,is_diagonal;
     double theta,sign_theta, s ,c ,t ,convergence=1, off_A, EPSILON=0.00001;
     double **V_matrix , **res_matrix;
     
@@ -305,8 +303,20 @@ double** jacobi_func(double** A, int n){
         return NULL;
     }
 
+    
+    is_diagonal = 1;
+    for (i = 0; i < n; i++){
+        for (j = 0; j < n; j++){
+            if (i != j && fabs(A[i][j]) > 0){
+                is_diagonal = 0;
+            }       
+        }
+    }
+    
+
 
     /*We will be using EPSILON = 1.0 × 10−5 OR maximum number of rotations = 100 */
+    if(!is_diagonal){
      while((cnt_num_rotation < 100) && (convergence>EPSILON)){ 
      
         off_A = off_func(A, n);
@@ -336,6 +346,16 @@ double** jacobi_func(double** A, int n){
         free(pivot);
 
     }
+    }
+    else{
+        for(i=0; i<n; i++){
+        res_matrix[0][i] = A[i][i];
+        }
+        for(i=1; i<n+1; i++){
+            res_matrix[i][i] = 1;
+        }
+        return res_matrix;
+    }
     
     /*first row will be the eigenvalues, and than each col is the eigenvectors */
     for(i=0; i<n; i++){
@@ -353,28 +373,21 @@ double** jacobi_func(double** A, int n){
 }
 
 
-double** non_neg_zero(double** mat, int n, int is_jacobi){
+double** non_neg_zero(double** mat, int n){
     int i,j;
     if(mat==NULL){
         return NULL;
     }
-
-    if (is_jacobi==0){
-        for(i=0; i<n; i++){
-            for (j=0; j<n; j++){
-                if(mat[i][j]==0){
-                   mat[i][j]= 0;
-                }  
-            }
+    /*there might be edge cases where you get -0.000 value, this is due to floating point precision,
+    treat it as zero and multiply the corresponding eigenvector by -1.
+    */
+    for(j=0; j<n; j++){
+        if((mat[0][j] < 0) && (floor(10000*(mat[0][j])/10000)==0)){
+            mat[0][j]=0;
+            for (i=1; i<n+1; i++){
+                mat[i][j] =(-1)*(mat[i][j]);
         }
-    }
-    else{
-        for(i=0; i<n+1; i++){
-            for (j=0; j<n; j++){
-                if(mat[i][j]==0){
-                   mat[i][j]= 0;
-                }
-             }  
+
         }
     }
     return mat;
@@ -384,11 +397,9 @@ double** non_neg_zero(double** mat, int n, int is_jacobi){
 /*get the goal and return the matrix*/
  double** wrapper(double** data_matrix, int n,int dim2,char * goal){
     double **wam_mat, **ddg_mat, **gl_mat, **jacobi_mat;
-    int is_jacobi=0;
     if (!strcmp(goal,"wam"))
     {
         wam_mat = wam_func( data_matrix,n, dim2);
-        wam_mat= non_neg_zero(wam_mat,n,is_jacobi);
         return wam_mat;
     }
     else if (!strcmp(goal,"ddg"))
@@ -396,7 +407,6 @@ double** non_neg_zero(double** mat, int n, int is_jacobi){
         wam_mat = wam_func(data_matrix,n, dim2);
         ddg_mat = ddg_func(wam_mat, n);
         free_matrix(wam_mat,n);
-        ddg_mat= non_neg_zero(ddg_mat,n,is_jacobi);
         return ddg_mat;
     }
     else if (!strcmp(goal,"gl"))
@@ -406,14 +416,12 @@ double** non_neg_zero(double** mat, int n, int is_jacobi){
         gl_mat = gl_func(wam_mat, ddg_mat, n);
         free_matrix(wam_mat,n);
         free_matrix(ddg_mat,n);
-        gl_mat= non_neg_zero(gl_mat,n,is_jacobi);
         return gl_mat;
     }
     else if (!strcmp(goal,"jacobi"))
     {
         jacobi_mat = jacobi_func(data_matrix, n);
-        is_jacobi=1;
-        jacobi_mat= non_neg_zero(jacobi_mat,n,is_jacobi);
+        jacobi_mat= non_neg_zero(jacobi_mat,n);
         return jacobi_mat;
     }
     free_matrix(data_matrix, n); /*check its not an issue with python API*/
@@ -428,7 +436,7 @@ int main(int argc, char *argv[])
     double num;
     char *goal ,*file_name;
     char ch, c;
-    int is_jacobi, i=0 ,j=0 ,n=0 ,dim2=1;
+    int  i=0 ,j=0 ,n=0 ,dim2=1;
     FILE *pf;
     if(argc!=3){
         printf("An Error Has Occurred");
