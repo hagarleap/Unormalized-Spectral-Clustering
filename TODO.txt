@@ -23,3 +23,24 @@ run all the testers for spkmeans.c - ask for someone who wrote tester
 
 
 gcc -ansi -Wall -Wextra -Werror -pedantic-errors spkmeans.c -o spkmeans -lm
+
+
+how to do spk:
+call jacobi
+convert to dataframe
+do heuristic if necessary
+send k/heuristic and the DF to kmeans_pp
+
+TODO 27.3.23
+do the following functions:
+kmeans_pp(U, k)
+get_first_k_eigenvectors
+print_matrix
+spkmeans_capi.get_heuristic
+
+figure out C module :)
+finish project
+sleep
+do passover
+say hi to your family and friends
+protest

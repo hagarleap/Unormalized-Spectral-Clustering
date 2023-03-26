@@ -244,18 +244,6 @@ double** calculate_new_V_matrix(double** V_matrix, int n, double c, double s, in
     }
     free_matrix(new_V,n);
     return V_matrix;
-        
-   
-/*double Vri, Vrj;
-    int r;
-    for(r=0;r<n;r++){
-        Vri=V_matrix[r][index_i];
-        Vrj=V_matrix[r][index_j];
-
-        V_matrix[r][index_i] = Vri*c - s*Vrj;
-        V_matrix[r][index_j] = Vrj*c + s*Vri;
-    }
-    return V_matrix;*/
     
 }
 
