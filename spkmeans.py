@@ -5,7 +5,7 @@ import numpy as np
 import math
 import spkmeans_capi
 
-def kmeans_pp(df, k): #work on this
+def kmeans_pp(df, k): #work on thisgit
     eps=0
     iter=300
 
