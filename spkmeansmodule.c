@@ -419,7 +419,7 @@ PyObject* kmeans(int K, int iter, int vector_len, int vectors_amt, double eps, P
 
 /////////////////////MODULE SECTION//////////////////////////
 
-int counter = 0;
+
 // wrapper function for kmeans
 static PyObject* cKmeans(PyObject *self, PyObject *args) {
     int K, iter, vector_len, vectors_amt;
@@ -433,24 +433,217 @@ static PyObject* cKmeans(PyObject *self, PyObject *args) {
     return kmeans(K, iter, vector_len, vectors_amt, eps, vectors, centroids);
 }
 
+/*free matrix data!*/
+static void free_matrix(double** mat, int dim1){
+    int i;
+    if(mat==NULL){
+        return;
+    }
+    for(i=0; i<dim1; i++){
+        free(mat[i]);
+    }
+    free(mat);
+}
 
-//wrapper function for C wrapper function
-static PyObject* cWrapper(PyObject *self, PyObject *args) {}
+/*returns matrix of zeros*/
+static double** matrix_maker(int dim1, int dim2){
+    double **mat;
+    int i,j;
+    mat = (double**)malloc(dim1*sizeof(double*));
+    if(mat==NULL){
+        return NULL;
+    }
+    for(i=0; i<dim1; i++){
+        mat[i] = (double*)malloc(dim2*sizeof(double));
+          
+    }
 
-// module's function table
+    for(i=0; i<dim1; i++){
+        for(j=0;j<dim2;j++){
+            mat[i][j]=0;
+        }
+    }
+      
+    return mat; 
+}
+
+
+
+
+
+/*gets flatten list and convert to data matrix in c*/
+static double** from_py_to_c( PyObject *data_from_c, int n, int dim2){
+    double **data_matrix;
+    int i,j;
+    data_matrix = matrix_maker(n,dim2);
+    if(data_matrix==NULL){
+        return NULL;
+    }
+    
+    for (i = 0; i < n; i++){
+        for (j = 0; j < dim2; j++){
+            data_matrix[i][j]=PyFloat_AsDouble(PyList_GetItem(data_from_c,i*dim2+j));
+        }
+    }
+    return data_matrix;
+}
+
+/*gets matrix in c and convert to flatten py list*/
+static PyObject* from_c_to_py( double **data_matrix, int n, int dim2){
+    PyObject * flatten_py_list;
+    int i,j,index=0;
+
+    flatten_py_list = PyList_New(n*dim2); 
+
+    for (i = 0; i < n; i++){
+        for (j = 0; j < dim2; j++){
+             PyList_SetItem(flatten_py_list,index,PyFloat_FromDouble(data_matrix[i][j]));
+             index++;
+        }
+    }
+    return flatten_py_list;
+    
+}
+
+
+static PyObject* wam(PyObject *self, PyObject *args)
+{
+    PyObject *data_from_c, *wam_py;
+    double **data_matrix,** wam;
+    int n,dim2;
+    
+    
+    if (!PyArg_ParseTuple(args, "Oii", &data_from_c, &n, &dim2))
+    {
+        printf("An Error Has Occurred");
+        exit(1);  
+    }
+    data_matrix = from_py_to_c(data_from_c ,n,  dim2);
+    wam = wam_func( data_matrix,  n,  dim2);
+    wam_py = from_c_to_py(wam ,n, n);
+
+    free_matrix(data_matrix,n);
+    free_matrix(wam,n);
+    return wam_py;
+
+}
+
+
+static PyObject* ddg(PyObject *self, PyObject *args)
+{
+    PyObject *data_from_c, *ddg_py;
+    double **data_matrix, **wam,**ddg;
+    int n,dim2;
+    
+    if (!PyArg_ParseTuple(args, "Oii", &data_from_c, &n, &dim2))
+    {
+        printf("An Error Has Occurred");
+        exit(1);  
+    }
+    data_matrix = from_py_to_c(data_from_c ,n,  dim2);
+    wam = wam_func(data_matrix, n, dim2);
+    ddg = ddg_func( wam, n);
+    ddg_py = from_c_to_py(ddg ,n,  n);
+
+    free_matrix(data_matrix,n);
+    free_matrix(wam,n);
+    free_matrix(ddg,n);
+    return ddg_py;
+
+}
+
+
+static PyObject* gl(PyObject *self, PyObject *args)
+{
+    PyObject *data_from_c, *gl_py;
+    double **data_matrix, **wam,**ddg ,**gl;
+    int n,dim2;
+    
+    if (!PyArg_ParseTuple(args, "Oii", &data_from_c, &n, &dim2))
+    {
+        printf("An Error Has Occurred");
+        exit(1);  
+    }
+    data_matrix = from_py_to_c(data_from_c ,n, dim2);
+    wam = wam_func(data_matrix, n, dim2);
+    ddg = ddg_func( wam, n);
+    gl = (wam ,ddg ,n);
+    gl_py = from_c_to_py(ddg ,n,  n);
+
+    free_matrix(data_matrix,n);
+    free_matrix(wam,n);
+    free_matrix(ddg,n);
+    free_matrix(gl,n);
+
+    return gl_py;
+
+}
+
+static PyObject* jacobi(PyObject *self, PyObject *args){
+    PyObject *data_from_c, *jacobi_py;
+    double **A;
+    int n;
+
+    if (!PyArg_ParseTuple(args, "Oii", &data_from_c, &n))
+    {
+        printf("An Error Has Occurred");
+        exit(1);  
+    }
+
+    A = from_py_to_c(data_from_c ,n,  n);
+    jacobi = jacobi_func(A,  n);
+    jacobi_py = from_c_to_py(jacobi ,n, n);
+
+    free_matrix(A,n);
+    free_matrix(jacobi,n+1);
+
+    return jacobi_py;
+
+}
+
+
+
+/*///////////////////////////API functins///////////////////////////*/
+
+
+/* module's function table*/
 static PyMethodDef kmeansMethods[] = {
     {"cKmeans",                   /* the Python method name that will be used */
       (PyCFunction) cKmeans, /* the C-function that implements the Python function and returns static PyObject*  */
       METH_VARARGS,           /* flags indicating parameters accepted for this function */
-      PyDoc_STR("Returns centroids using a modified version of the k-means clustering program we created in HW 1, which uses new arguments: K, iter, vector_len, vectors_amt, eps, vectors, centroids.")}, /*  The docstring for the function */
-    {NULL, NULL, 0, NULL} 
+      PyDoc_STR("Returns centroids using a modified version of the k-means clustering program we created in HW 1,which uses new arguments: K, iter, vector_len, vectors_amt, eps, vectors, centroids.")
+      }, {
+        "wam", 
+       (PyCFunction) wam, 
+        METH_VARARGS, 
+        PyDoc_STR("wam: Calculate and output the Weighted Adjacency Matrix")
+      },{
+        "ddg", 
+       (PyCFunction) ddg, 
+        METH_VARARGS, 
+        PyDoc_STR("ddg: Calculate and output the Diagonal Degree Matrix")
+      },{
+        "gl", 
+       (PyCFunction) gl, 
+        METH_VARARGS, 
+        PyDoc_STR("gl: Calculate and output the Graph Laplacian")
+      },{
+        "jacobi", 
+       (PyCFunction) jacobi, 
+        METH_VARARGS, 
+        PyDoc_STR("jacobi: Calculate and output the eigenvalues and eigenvectors") 
+      },{
+        NULL, NULL, 0, NULL
+    } 
 };
+
+
 
 // modules definition
 static struct PyModuleDef kmeans_Module = {
     PyModuleDef_HEAD_INIT,
-    "kmeans_capi",     // name of module exposed to Python
-    "Python wrapper for kmeans C extension library.", // module documentation
+    "spkmeans_capi",     // name of module exposed to Python
+    "Python wrapper for spkmeans C extension library.", // module documentation
     -1,
     kmeansMethods
 };

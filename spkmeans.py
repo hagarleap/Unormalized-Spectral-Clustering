@@ -131,12 +131,7 @@ def main_func(goal, file_name, k_is_given, k=0):
         
     elif(goal == 'ddg'):
         
-        wam = spkmeans_capi.wam(vectors, vectors_amt, vector_len)
-        if(wam == None):
-            print("An Error Has Occurred")
-            exit()
-            
-        ddg = spkmeans_capi.ddg(wam, vectors_amt)
+        ddg = spkmeans_capi.ddg(vectors, vectors_amt, vector_len)
         if(ddg == None):
             print("An Error Has Occurred")
             exit()
@@ -144,18 +139,8 @@ def main_func(goal, file_name, k_is_given, k=0):
         print_matrix(ddg, vectors_amt, vector_len)
         
     elif(goal == 'gl'):
-        
-        wam = spkmeans_capi.wam(vectors, vectors_amt, vector_len)
-        if(wam == None):
-            print("An Error Has Occurred")
-            exit()
             
-        ddg = spkmeans_capi.ddg(wam, vectors_amt)
-        if(ddg == None):
-            print("An Error Has Occurred")
-            exit()
-            
-        gl = spkmeans_capi.gl(wam, ddg, vectors_amt)
+        gl = spkmeans_capi.gl(vectors, vectors_amt, vector_len)
         if(gl == None):
             print("An Error Has Occurred")
             exit()
@@ -173,21 +158,6 @@ def main_func(goal, file_name, k_is_given, k=0):
          
     elif(goal == 'spk'):
         
-        wam = spkmeans_capi.wam(vectors, vectors_amt, vector_len)
-        if(wam == None):
-            print("An Error Has Occurred")
-            exit()
-            
-        ddg = spkmeans_capi.ddg(wam, vectors_amt)
-        if(ddg == None):
-            print("An Error Has Occurred")
-            exit()
-            
-        gl = spkmeans_capi.gl(wam, ddg, vectors_amt)
-        if(gl == None):
-            print("An Error Has Occurred")
-            exit()
-            
         jacobi = spkmeans_capi.jacobi(gl, vectors_amt)
         if(jacobi == None):
             print("An Error Has Occurred")

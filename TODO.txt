@@ -11,14 +11,10 @@ todo on thursday:
 
 
 
-
-
-
-25.3.23
+TODO :
 make sure all memory is freed
-
-
 run all the testers for spkmeans.c - ask for someone who wrote tester
+check releasing mem for return objects in c->py transition
 
 
 
@@ -31,17 +27,6 @@ convert to dataframe
 do heuristic if necessary
 send k/heuristic and the DF to kmeans_pp
 
-TODO 27.3.23
-do the following functions:
 
 
 
-
-check releasing mem for return objects in c->py transition
-
-figure out C module :)
-finish project
-sleep
-do passover
-say hi to your family and friends
-protest
