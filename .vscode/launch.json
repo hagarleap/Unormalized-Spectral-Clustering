@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/${fileBasenameNoExtension}",
-            "args": ["wam", "test1.txt"],
+            "args": ["jacobi", "test5_j.txt"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

@@ -212,10 +212,12 @@ double** calculate_new_V_matrix(double** V_matrix, int n, double c, double s, in
 
     rotation_mat = matrix_maker(n,n);
     if(rotation_mat==NULL){
+        free_matrix(V_matrix, n);
         return NULL;
     }
     new_V = matrix_maker(n,n);
     if(new_V==NULL){
+        free_matrix(V_matrix, n);
         free_matrix(rotation_mat,n);
         return NULL;
     }
@@ -315,7 +317,6 @@ double** jacobi_func(double** A, int n){
         theta= (A[index_j][index_j]-A[index_i][index_i])/(2*A[index_i][index_j]);
         /*check this calc*/
 
-     
         sign_theta = (theta>=0.0) ? 1.0: -1.0;
     
         t= (double)(sign_theta / (fabs(theta) + sqrt(pow(theta, 2) + 1)));
@@ -324,10 +325,12 @@ double** jacobi_func(double** A, int n){
         A = calculate_A_tag_matrix(A , n, c, s, index_i, index_j);
 
         if(A==NULL){
+            free(pivot);
             return NULL;
         } 
         V_matrix = calculate_new_V_matrix(V_matrix, n, c, s, index_i, index_j);
         if(V_matrix==NULL){
+            free(pivot);
             return NULL;
          }
         convergence = off_A - off_func(A, n);

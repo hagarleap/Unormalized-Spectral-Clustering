@@ -13,9 +13,12 @@ def kmeans_pp(flat_mat, k, vectors_amt):
 
     ##turn flat mat into U(n x k) mat##
     vectors = np.reshape(np.array(flat_mat),(vectors_amt+1,vectors_amt))
-    vectors = vectors[1:,0:k]        #now vectors == U!!! delete first row (that has eigenvalues) and keep first k column vectors
+    vectors[:,vectors[0:1, :].argsort()[0]]
+    vectors = vectors[1:, 0:k]        #now vectors == U!!! delete first row (that has eigenvalues) and keep first k column vectors
     keys = np.arange(0,vectors_amt)
     vector_len = k
+    
+    
     
     ##Start algorithm##
     
