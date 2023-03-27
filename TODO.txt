@@ -29,4 +29,4 @@ send k/heuristic and the DF to kmeans_pp
 
 
 
-
+python3 setup.py build_ext --inplace

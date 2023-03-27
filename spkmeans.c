@@ -242,6 +242,7 @@ double** calculate_new_V_matrix(double** V_matrix, int n, double c, double s, in
         }
             
     }
+    free_matrix(rotation_mat,n);
     free_matrix(new_V,n);
     return V_matrix;
     
@@ -342,6 +343,7 @@ double** jacobi_func(double** A, int n){
         for(i=1; i<n+1; i++){
             res_matrix[i][i] = 1;
         }
+        free_matrix(V_matrix, n);
         return res_matrix;
     }
     
@@ -412,7 +414,7 @@ double** non_neg_zero(double** mat, int n){
         jacobi_mat= non_neg_zero(jacobi_mat,n);
         return jacobi_mat;
     }
-    free_matrix(data_matrix, n); /*check its not an issue with python API*/
+
     return NULL;
 
  }
@@ -483,13 +485,16 @@ int main(int argc, char *argv[])
     }
     fclose (pf); 
    
-    /*print output*/
+    
     goal_mat = wrapper(data_matrix ,n , dim2, goal);
+    free_matrix(data_matrix, n);
+
     if(goal_mat==NULL){
         printf("An Error Has Occurred");
         return 0;
     }
 
+    /*print output*/
     if (!strcmp(goal,"jacobi")){
         print_matrix(goal_mat,n+1, n);
         n++; /*because jacobi has n+1 rows, need this for free_matrix*/
@@ -497,7 +502,7 @@ int main(int argc, char *argv[])
     else{ /*for wam, ddg, gl*/
         print_matrix(goal_mat,n,n);
     }
-
+    
     free_matrix(goal_mat,n);
     return 0;
 

@@ -95,6 +95,7 @@ def get_heuristic(flat_j_mat, vectors_amt):
     return max_k
 
 def print_matrix(mat, rows, cols):
+    print("printing")
     for i in range(rows):
         for j in range(cols):
             x = "%.4f" % round(mat[i,j], 4)
