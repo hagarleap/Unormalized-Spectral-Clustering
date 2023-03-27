@@ -37,8 +37,7 @@
             "args": [
                 "wam",
                 "test1.txt"
-
-            ],
+             ],
             "cwd": "${fileDirname}",
             "console": "integratedTerminal",
         },
@@ -47,7 +46,7 @@
             "name": "(gdb) Attach",
             "type": "cppdbg",
             "request": "attach",
-            "program": "/usr/local/lib/python3.7.1/bin/python3.7",
+            "program": "/usr/bin/python3",
             "processId": "${command:pickProcess}",
             "MIMode": "gdb",
             "setupCommands": [

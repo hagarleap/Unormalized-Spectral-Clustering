@@ -27,6 +27,6 @@ convert to dataframe
 do heuristic if necessary
 send k/heuristic and the DF to kmeans_pp
 
-
+python3 run_tests.py no_c no_g
 
 python3 setup.py build_ext --inplace

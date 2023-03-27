@@ -607,7 +607,7 @@ static PyObject* jacobi(PyObject *self, PyObject *args){
 
 
 /* module's function table*/
-static PyMethodDef kmeansMethods[] = {
+static PyMethodDef spkmeansMethods[] = {
     {"cKmeans",                   /* the Python method name that will be used */
       (PyCFunction) cKmeans, /* the C-function that implements the Python function and returns static PyObject*  */
       METH_VARARGS,           /* flags indicating parameters accepted for this function */
@@ -640,17 +640,17 @@ static PyMethodDef kmeansMethods[] = {
 
 
 // modules definition
-static struct PyModuleDef kmeans_Module = {
+static struct PyModuleDef spkmeans_Module = {
     PyModuleDef_HEAD_INIT,
     "spkmeans_capi",     // name of module exposed to Python
     "Python wrapper for spkmeans C extension library.", // module documentation
     -1,
-    kmeansMethods
+    spkmeansMethods
 };
 
-PyMODINIT_FUNC PyInit_kmeans_capi(void) {
+PyMODINIT_FUNC PyInit_spkmeans_capi(void) {
     PyObject *m;
-    m = PyModule_Create(&kmeans_Module);
+    m = PyModule_Create(&spkmeans_Module);
     if (!m) {
         return NULL;
     }
