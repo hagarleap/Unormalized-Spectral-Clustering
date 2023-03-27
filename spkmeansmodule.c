@@ -433,6 +433,7 @@ static PyObject* cKmeans(PyObject *self, PyObject *args) {
     return kmeans(K, iter, vector_len, vectors_amt, eps, vectors, centroids);
 }
 
+
 //wrapper function for C wrapper function
 static PyObject* cWrapper(PyObject *self, PyObject *args) {}
 

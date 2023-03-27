@@ -33,10 +33,11 @@ send k/heuristic and the DF to kmeans_pp
 
 TODO 27.3.23
 do the following functions:
-kmeans_pp(U, k)
-get_first_k_eigenvectors
-print_matrix
-spkmeans_capi.get_heuristic
+
+
+
+
+check releasing mem for return objects in c->py transition
 
 figure out C module :)
 finish project

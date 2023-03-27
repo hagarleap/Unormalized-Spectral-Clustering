@@ -5,23 +5,17 @@ import numpy as np
 import math
 import spkmeans_capi
 
-def kmeans_pp(df, k): #work on thisgit
+#kmeans_pp has been updated since HW2! Here, instead of recieving csvs, we recieve a flat list that must be
+# reshaped with numpy, then turned into U. The rest of the function works just as before afterwards.
+def kmeans_pp(flat_mat, k, vectors_amt): 
     eps=0
     iter=300
 
-    
-    vectors_amt = df_1.shape[0]
-  
-    ##check that the amount of clusters is legal##
-    if(k>vectors_amt):
-        print("Invalid number of clusters!")
-        exit()
-
-    
-    ##convert dataframe into numpy array, without keys!##
-    keys = df_vectors[0].to_numpy()
-    vectors = df_vectors.drop(0, axis=1).to_numpy()
-    vector_len = np.size(vectors[0])
+    ##turn flat mat into U(n x k) mat##
+    vectors = np.reshape(np.array(flat_mat),(vectors_amt+1,vectors_amt))
+    vectors = vectors[1:,0:k]        #now vectors == U!!! delete first row (that has eigenvalues) and keep first k column vectors
+    keys = np.arange(0,vectors_amt)
+    vector_len = k
     
     ##Start algorithm##
     
@@ -29,8 +23,8 @@ def kmeans_pp(df, k): #work on thisgit
     centroid_keys = []
     centroids = [] ## python array of numpy arrays
     np.random.seed(0)
-    curr_index = np.random.choice(np.size(keys))
-    centroid_keys.append(keys[curr_index])
+    curr_index = np.random.choice(vectors_amt)
+    centroid_keys.append(curr_index)
     centroids.append(vectors[curr_index].tolist())
 
     
@@ -42,8 +36,8 @@ def kmeans_pp(df, k): #work on thisgit
         probabilities = np.divide(distances, distances.sum())
         
         ##step 2 but with prob function##
-        curr_index = np.random.choice(np.size(keys), p=probabilities) 
-        centroid_keys.append(keys[curr_index])
+        curr_index = np.random.choice(vectors_amt, p=probabilities) 
+        centroid_keys.append(curr_index)
         centroids.append(vectors[curr_index].tolist())
         
     
@@ -52,14 +46,12 @@ def kmeans_pp(df, k): #work on thisgit
     print(f"{int(centroid_keys[-1])}") 
    
     #convert vectors to 2Darray
-    vectors = vectors.flatten()
-    vectors = vectors.tolist()
     centroids = np.array(centroids)
     centroids = centroids.flatten()
     centroids = centroids.tolist()
     
 
-    new_centroids = kmeans_capi.cKmeans(k, iter, vector_len, vectors_amt, eps, vectors, centroids)
+    new_centroids = spkmeans_capi.cKmeans(k, iter, vector_len, vectors_amt, eps, flat_mat, centroids)
 
     if(new_centroids == None):
         print("An Error Has Occurred")
@@ -90,6 +82,27 @@ def min_distance(vector, centroids):
            min_dis=curr_distance
     return  min_dis    
 
+def get_heuristic(flat_j_mat, vectors_amt):
+    eigenvalues = np.array(flat_j_mat[:vectors_amt]).sort() #first row is e"e
+    max_gap = 0
+    max_k = 0
+     
+    for i in range(n//2 + 1):
+        delta = abs(eigenvalues[i]-eigenvalues[i+1])
+        if delta>max:
+            max_k = i
+            max_gap = delta
+    return max_k
+
+def print_matrix(mat, rows, cols):
+    for i in range(rows):
+        for j in range(cols):
+            x = "%.4f" % round(mat[i,j], 4)
+        if j==cols-1:
+            print(f"{x}")
+        else:    
+            print(f"{x}," , end="")
+    
 
 def main_func(goal, file_name, k_is_given, k=0):
            
@@ -108,34 +121,87 @@ def main_func(goal, file_name, k_is_given, k=0):
     vectors = vectors.tolist()
     
     if(goal == 'wam'):
+        
         wam = spkmeans_capi.wam(vectors, vectors_amt, vector_len)
+        if(wam == None):
+            print("An Error Has Occurred")
+            exit()
+            
         print_matrix(wam, vectors_amt, vector_len)
         
     elif(goal == 'ddg'):
+        
         wam = spkmeans_capi.wam(vectors, vectors_amt, vector_len)
+        if(wam == None):
+            print("An Error Has Occurred")
+            exit()
+            
         ddg = spkmeans_capi.ddg(wam, vectors_amt)
+        if(ddg == None):
+            print("An Error Has Occurred")
+            exit()
+            
         print_matrix(ddg, vectors_amt, vector_len)
         
     elif(goal == 'gl'):
+        
         wam = spkmeans_capi.wam(vectors, vectors_amt, vector_len)
+        if(wam == None):
+            print("An Error Has Occurred")
+            exit()
+            
         ddg = spkmeans_capi.ddg(wam, vectors_amt)
+        if(ddg == None):
+            print("An Error Has Occurred")
+            exit()
+            
         gl = spkmeans_capi.gl(wam, ddg, vectors_amt)
+        if(gl == None):
+            print("An Error Has Occurred")
+            exit()
+            
         print_matrix(gl, vectors_amt, vector_len)
          
     elif(goal == 'jacobi'):
+        
         jacobi = spkmeans_capi.jacobi(vectors, vectors_amt)
+        if(jacobi == None):
+            print("An Error Has Occurred")
+            exit()
+            
         print_matrix(jacobi, vectors_amt, vector_len)
          
     elif(goal == 'spk'):
+        
         wam = spkmeans_capi.wam(vectors, vectors_amt, vector_len)
+        if(wam == None):
+            print("An Error Has Occurred")
+            exit()
+            
         ddg = spkmeans_capi.ddg(wam, vectors_amt)
+        if(ddg == None):
+            print("An Error Has Occurred")
+            exit()
+            
         gl = spkmeans_capi.gl(wam, ddg, vectors_amt)
+        if(gl == None):
+            print("An Error Has Occurred")
+            exit()
+            
         jacobi = spkmeans_capi.jacobi(gl, vectors_amt)
+        if(jacobi == None):
+            print("An Error Has Occurred")
+            exit()
+            
         if(not k_is_given):
-            k = spkmeans_capi.get_heuristic(jacobi, vectors_amt)
-        U = get_first_k_eigenvectors(jacobi)
-        kmeans_pp(U, k)
-    else:
+            k = get_heuristic(jacobi, vectors_amt)
+            
+        #send full matrix, turn it into U in kmeans
+        kmeans_pp(jacobi, k, vectors_amt)
+        
+    else: #if goal is illegal
+        print("An Error Has Occurred")
+        exit()
             
  
 # double** wam_func(double** data_matrix, int n, int dim2);
