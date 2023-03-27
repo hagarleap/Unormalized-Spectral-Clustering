@@ -156,8 +156,9 @@ def main_func(goal, file_name, k_is_given, k=0):
             
         print_matrix(jacobi, vectors_amt, vector_len)
          
-    elif(goal == 'spk'):
+    elif(goal == 'spk'): 
         
+        gl = spkmeans_capi.gl(vectors, vectors_amt, vector_len)
         jacobi = spkmeans_capi.jacobi(gl, vectors_amt)
         if(jacobi == None):
             print("An Error Has Occurred")
@@ -173,11 +174,7 @@ def main_func(goal, file_name, k_is_given, k=0):
         print("An Error Has Occurred")
         exit()
             
- 
-# double** wam_func(double** data_matrix, int n, int dim2);
-# double** ddg_func( double** weight_mat, int n);
-# double** gl_func(double** weight_mat, double** diag_degree_mat, int n);
-# double** jacobi_func(double** A, int n)          
+         
             
 argv = sys.argv[1:]
 if len(argv)==3:
