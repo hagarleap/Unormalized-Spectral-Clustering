@@ -1,7 +1,8 @@
-from setuptools import Extension, setup
+from setuptools import Extension, setup, find_packages
 
-module = Extension("spkmeans_capi", sources=['spkmeansmodule.c'])
 setup(name='spkmeans_capi',
      version='1.0',
      description='Python wrapper for Spectral Kmeans C extension',
-     ext_modules=[module])
+     packages=find_packages(),
+     ext_modules=[Extension('mykmeanssp', sources=['spkmeansmodule.c', 'spkmeans.c'])])
+
