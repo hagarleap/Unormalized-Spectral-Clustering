@@ -489,7 +489,7 @@ static double** from_py_to_c( PyObject *data_from_c, int n, int dim2){
 }
 
 /*gets matrix in c and convert to flatten py list*/
-static PyObject* from_c_to_py( double **data_matrix, int n, int dim2){
+static PyObject* from_c_to_py(double** data_matrix, int n, int dim2){
     PyObject * flatten_py_list;
     int i,j,index=0;
 
@@ -567,13 +567,13 @@ static PyObject* gl(PyObject *self, PyObject *args)
     data_matrix = from_py_to_c(data_from_c ,n, dim2);
     wam = wam_func(data_matrix, n, dim2);
     ddg = ddg_func( wam, n);
-    gl = (wam ,ddg ,n);
-    gl_py = from_c_to_py(ddg ,n,  n);
+    gl = gl_func(wam, ddg, n);
+    gl_py = from_c_to_py(gl ,n,  n);
 
     free_matrix(data_matrix,n);
-    free_matrix(wam,n);
-    free_matrix(ddg,n);
-    free_matrix(gl,n);
+    free_matrix(wam, n);
+    free_matrix(ddg, n);
+    free_matrix(gl, n);
 
     return gl_py;
 
@@ -581,7 +581,7 @@ static PyObject* gl(PyObject *self, PyObject *args)
 
 static PyObject* jacobi(PyObject *self, PyObject *args){
     PyObject *data_from_c, *jacobi_py;
-    double **A;
+    double **A, **jacobi;
     int n;
 
     if (!PyArg_ParseTuple(args, "Oii", &data_from_c, &n))
@@ -594,8 +594,8 @@ static PyObject* jacobi(PyObject *self, PyObject *args){
     jacobi = jacobi_func(A,  n);
     jacobi_py = from_c_to_py(jacobi ,n, n);
 
-    free_matrix(A,n);
-    free_matrix(jacobi,n+1);
+    free_matrix(A, n);
+    free_matrix(jacobi, n+1);
 
     return jacobi_py;
 
