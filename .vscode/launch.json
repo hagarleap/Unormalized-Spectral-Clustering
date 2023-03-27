@@ -29,6 +29,35 @@
             ],
             "preLaunchTask": "compile C"
         },
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "wam",
+                "test1.txt"
+
+            ],
+            "cwd": "${fileDirname}",
+            "console": "integratedTerminal",
+        },
+
+ {
+            "name": "(gdb) Attach",
+            "type": "cppdbg",
+            "request": "attach",
+            "program": "/usr/local/lib/python3.7.1/bin/python3.7",
+            "processId": "${command:pickProcess}",
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
         
     ]
 }

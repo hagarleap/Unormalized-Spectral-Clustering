@@ -90,7 +90,7 @@ def get_heuristic(flat_j_mat, vectors_amt):
     max_gap = 0
     max_k = 0
      
-    for i in range(n//2 + 1):
+    for i in range(vectors_amt//2 + 1):
         delta = abs(eigenvalues[i]-eigenvalues[i+1])
         if delta>max:
             max_k = i
