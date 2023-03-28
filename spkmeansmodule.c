@@ -584,15 +584,14 @@ static PyObject* jacobi(PyObject *self, PyObject *args){
     double **A, **jacobi;
     int n;
 
-    if (!PyArg_ParseTuple(args, "Oii", &data_from_c, &n))
+    if (!PyArg_ParseTuple(args, "Oi", &data_from_c, &n))
     {
         printf("An Error Has Occurred");
         exit(1);  
     }
-
     A = from_py_to_c(data_from_c ,n,  n);
     jacobi = jacobi_func(A,  n);
-    jacobi_py = from_c_to_py(jacobi ,n, n);
+    jacobi_py = from_c_to_py(jacobi ,n+1, n);
 
     free_matrix(A, n);
     free_matrix(jacobi, n+1);

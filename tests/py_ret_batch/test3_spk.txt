@@ -1,1 +1,7 @@
-An Error Has Occurred
+12,7,11,10,9,5
+0.0746,0.0945,-0.0168,0.1404,-0.0549,0.0704
+nan,nan,nan,nan,nan,nan
+nan,nan,nan,nan,nan,nan
+nan,nan,nan,nan,nan,nan
+nan,nan,nan,nan,nan,nan
+nan,nan,nan,nan,nan,nan

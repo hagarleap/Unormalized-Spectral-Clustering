@@ -86,14 +86,14 @@ def min_distance(vector, centroids):
     return  min_dis    
 
 def get_heuristic(flat_j_mat, vectors_amt):
-    eigenvalues = np.array(flat_j_mat[:vectors_amt]).sort() #first row is e"e
+    eigenvalues = np.sort(np.array(flat_j_mat[:vectors_amt])) #first row is e"e
     max_gap = 0
     max_k = 0
      
-    for i in range(vectors_amt//2 + 1):
+    for i in range((vectors_amt//2)):
         delta = abs(eigenvalues[i]-eigenvalues[i+1])
-        if delta>max:
-            max_k = i
+        if delta > max_gap:
+            max_k = i+1
             max_gap = delta
     return max_k
 
@@ -148,16 +148,14 @@ def main_func(goal, file_name, k_is_given, k=0):
         print_matrix(gl, vectors_amt, vectors_amt)
          
     elif(goal == 'jacobi'):
-        
         jacobi = spkmeans_capi.jacobi(vectors, vectors_amt)
         if(jacobi == None):
             print("An Error Has Occurred")
             exit()
-            
-        print_matrix(jacobi, vectors_amt, vectors_amt)
+        jacobi_rows =  vectors_amt+1  
+        print_matrix(jacobi, jacobi_rows, vectors_amt)
          
     elif(goal == 'spk'): 
-        
         gl = spkmeans_capi.gl(vectors, vectors_amt, vector_len)
         jacobi = spkmeans_capi.jacobi(gl, vectors_amt)
         if(jacobi == None):
