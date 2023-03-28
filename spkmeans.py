@@ -98,11 +98,10 @@ def get_heuristic(flat_j_mat, vectors_amt):
     return max_k
 
 def print_matrix(mat, rows, cols):
-    
-#    print(mat)
+
     for i in range(rows): 
         for j in range(cols):
-            x = "%.4f" % round(mat[i*j + j], 4)
+            x = "%.4f" % round(mat[i*cols + j], 4)
             if j==cols-1:
                 print(x)
             else: 
@@ -111,14 +110,17 @@ def print_matrix(mat, rows, cols):
 
 def main_func(goal, file_name, k_is_given, k=0):
     
-    vectors = np.loadtxt("test1.txt", delimiter=",", dtype=float)
+    vectors = np.loadtxt(file_name, delimiter=",", dtype=float)
     
     #get dim2 and n
     vectors_amt = np.shape(vectors)[0]
     vector_len = np.shape(vectors)[1]
     #process to send to API
     vectors = vectors.flatten()
+   
     vectors = vectors.tolist()
+    
+
     if(goal == 'wam'):
         wam = spkmeans_capi.wam(vectors, vectors_amt, vector_len)
         if(wam == None):

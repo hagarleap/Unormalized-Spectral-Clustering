@@ -7,4 +7,6 @@ gcc -ansi -Wall -Wextra -Werror -pedantic-errors spkmeans.c -o spkmeans -lm
 
 python3 run_tests.py no_c no_g
 
+
+
 python3 setup.py build_ext --inplace
