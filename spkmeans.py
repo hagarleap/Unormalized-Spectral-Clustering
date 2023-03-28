@@ -10,10 +10,9 @@ import spkmeans_capi
 def kmeans_pp(flat_mat, k, vectors_amt): 
     eps=0
     iter=300
-
     ##turn flat mat into U(n x k) mat##
     vectors = np.reshape(np.array(flat_mat),(vectors_amt+1,vectors_amt))
-    vectors[:,vectors[0:1, :].argsort()[0]]
+    vectors = vectors[:,vectors[0:1, :].argsort()[0]]
     vectors = vectors[1:, 0:k]        #now vectors == U!!! delete first row (that has eigenvalues) and keep first k column vectors
     keys = np.arange(0,vectors_amt)
     vector_len = k
@@ -53,8 +52,9 @@ def kmeans_pp(flat_mat, k, vectors_amt):
     centroids = centroids.flatten()
     centroids = centroids.tolist()
     
+    vectors = vectors.flatten().tolist()
 
-    new_centroids = spkmeans_capi.cKmeans(k, iter, vector_len, vectors_amt, eps, flat_mat, centroids)
+    new_centroids = spkmeans_capi.cKmeans(k, iter, vector_len, vectors_amt, eps, vectors, centroids)
 
     if(new_centroids == None):
         print("An Error Has Occurred")
