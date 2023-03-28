@@ -1,8 +1,11 @@
 
 TODO :
+reread the projects requirments
 clean up the code - in all the files (py, module,c...)
 ask in whats up group if there are more testers
 read forum to verify everything is ok
+run the test cleanly again (delete all the files before)
+
 
 gcc -ansi -Wall -Wextra -Werror -pedantic-errors spkmeans.c -o spkmeans -lm
 
