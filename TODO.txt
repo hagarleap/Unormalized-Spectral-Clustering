@@ -1,31 +1,9 @@
-21.3.23
-todo on thursday:
-  -start coding in C in spkmeans.c all of the functions: wam, ddg, gl, jacobi
-  -choose the data structure to pass them (array of arrays)
-
-
-**remember: printing "An Error Has Occurred" is the interface's responsibility***
-**remember: for now we assume datamatrix memeory release is the wrapper functions responsibility in spkmeans.c***
-**RELEASE MEMORY***
-** REMEMBER ; *****
-
-
 
 TODO :
-make sure all memory is freed
-run all the testers for spkmeans.c - ask for someone who wrote tester
-check releasing mem for return objects in c->py transition
-
-
+fix python 
+run dana and yair test
 
 gcc -ansi -Wall -Wextra -Werror -pedantic-errors spkmeans.c -o spkmeans -lm
-
-
-how to do spk:
-call jacobi
-convert to dataframe
-do heuristic if necessary
-send k/heuristic and the DF to kmeans_pp
 
 python3 run_tests.py no_c no_g
 
