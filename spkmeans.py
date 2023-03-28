@@ -98,43 +98,34 @@ def get_heuristic(flat_j_mat, vectors_amt):
     return max_k
 
 def print_matrix(mat, rows, cols):
-    print("printing matrix")
-    for i in range(rows):
+    
+#    print(mat)
+    for i in range(rows): 
         for j in range(cols):
-            x = "%.4f" % round(mat[i,j], 4)
-        if j==cols-1:
-            print(f"{x}")
-        else:    
-            print(f"{x}," , end="")
+            x = "%.4f" % round(mat[i*j + j], 4)
+            if j==cols-1:
+                print(x)
+            else: 
+                print(f"{x}," , end="")
     
 
 def main_func(goal, file_name, k_is_given, k=0):
-          
     
-    df = pd.read_csv(file_name,header=None)
-    print("arrive 116") 
-    # print(df) 
-    # vectors = df.to_numpy()
-    vectors = df.drop(0, axis=1).to_numpy()
-    print(vectors)
+    vectors = np.loadtxt("test1.txt", delimiter=",", dtype=float)
+    
     #get dim2 and n
     vectors_amt = np.shape(vectors)[0]
-    print("arrive 121")
     vector_len = np.shape(vectors)[1]
-    print("arrive 123")
     #process to send to API
     vectors = vectors.flatten()
-    print("arrive 126")
     vectors = vectors.tolist()
-    print("arrive 128")
     if(goal == 'wam'):
-        print("4")
         wam = spkmeans_capi.wam(vectors, vectors_amt, vector_len)
         if(wam == None):
             print("An Error Has Occurred")
             exit()
-        print("5")    
-        print_matrix(wam, vectors_amt, vector_len)
+               
+        print_matrix(wam, vectors_amt, vectors_amt)
         
     elif(goal == 'ddg'):
         
@@ -143,7 +134,7 @@ def main_func(goal, file_name, k_is_given, k=0):
             print("An Error Has Occurred")
             exit()
             
-        print_matrix(ddg, vectors_amt, vector_len)
+        print_matrix(ddg, vectors_amt, vectors_amt)
         
     elif(goal == 'gl'):
             
@@ -152,7 +143,7 @@ def main_func(goal, file_name, k_is_given, k=0):
             print("An Error Has Occurred")
             exit()
             
-        print_matrix(gl, vectors_amt, vector_len)
+        print_matrix(gl, vectors_amt, vectors_amt)
          
     elif(goal == 'jacobi'):
         
@@ -161,7 +152,7 @@ def main_func(goal, file_name, k_is_given, k=0):
             print("An Error Has Occurred")
             exit()
             
-        print_matrix(jacobi, vectors_amt, vector_len)
+        print_matrix(jacobi, vectors_amt, vectors_amt)
          
     elif(goal == 'spk'): 
         
@@ -188,17 +179,14 @@ if len(argv)==3:
     k = int(argv[0])
     goal = argv[1]
     file_name = argv[2]
-    print("1")
     main_func(goal, file_name, True,  k)
 
 elif len(argv)==2:
     goal = argv[0]
     file_name = argv[1]
-    print("2")
     main_func(goal, file_name, False)
     
 else:
-    print("arrive null")
     print("An Error Has Occurred")
     exit()
     
