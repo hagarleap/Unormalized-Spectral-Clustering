@@ -139,7 +139,7 @@ double** gl_func(double** weight_mat, double** diag_degree_mat, int n){
     return laplacian_mat;
 }
 
-/* get symmetric matrix A and return The i,j  for Aij is the off-diagonal element with the largest absolute value.*/
+/* Get symmetric matrix A, and return the i,j  for Aij that is the off-diagonal element with the largest absolute value.*/
 int* pivot_func(double** A, int n){
     int *index;
     int i, j;
@@ -315,7 +315,6 @@ double** jacobi_func(double** A, int n){
         index_i = pivot[0];
         index_j = pivot[1];
         theta= (A[index_j][index_j]-A[index_i][index_i])/(2*A[index_i][index_j]);
-        /*check this calc*/
 
         sign_theta = (theta>=0.0) ? 1.0: -1.0;
     
@@ -365,15 +364,14 @@ double** jacobi_func(double** A, int n){
     return res_matrix;
 }
 
-
+/*Fixes edge cases where you get -0.000 value, this is due to floating point precision,
+ treat it as zero and multiply the corresponding eigenvector by -1. */
 double** non_neg_zero(double** mat, int n){
     int i,j;
     if(mat==NULL){
         return NULL;
     }
-    /*there might be edge cases where you get -0.000 value, this is due to floating point precision,
-    treat it as zero and multiply the corresponding eigenvector by -1.
-    */
+
     for(j=0; j<n; j++){
         if((mat[0][j] < 0) && (floor(10000*(mat[0][j])/10000)==0)){
             mat[0][j]=0;
