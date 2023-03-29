@@ -1,6 +1,5 @@
 
 TODO :
-reread the projects requirments
 clean up the code - in all the files (py, module,c...)
 ask in whats up group if there are more testers
 read forum to verify everything is ok
@@ -14,3 +13,10 @@ python3 run_tests.py no_c no_g
 
 
 python3 setup.py build_ext --inplace
+
+
+
+python3 spkmeans.py 5 spk test1.txt
+
+
+206825176_318459666_project
