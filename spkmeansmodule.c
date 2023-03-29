@@ -471,7 +471,7 @@ static double** matrix_maker(int dim1, int dim2){
 
 
 
-/*gets flatten list and convert to data matrix in c*/
+/*gets flattened list from Python and converts to 2D matrix in C*/
 static double** from_py_to_c( PyObject *data_from_c, int n, int dim2){
     double **data_matrix;
     int i,j;
@@ -488,7 +488,7 @@ static double** from_py_to_c( PyObject *data_from_c, int n, int dim2){
     return data_matrix;
 }
 
-/*gets matrix in c and convert to flatten py list*/
+/*gets matrix in C and converts to flattened Python list*/
 static PyObject* from_c_to_py(double** data_matrix, int n, int dim2){
     PyObject * flatten_py_list;
     int i,j,index=0;
@@ -607,9 +607,9 @@ static PyObject* jacobi(PyObject *self, PyObject *args){
 
 /* module's function table*/
 static PyMethodDef spkmeansMethods[] = {
-    {"cKmeans",                   /* the Python method name that will be used */
-      (PyCFunction) cKmeans, /* the C-function that implements the Python function and returns static PyObject*  */
-      METH_VARARGS,           /* flags indicating parameters accepted for this function */
+    {"cKmeans",               
+      (PyCFunction) cKmeans, 
+      METH_VARARGS,     
       PyDoc_STR("Returns centroids using a modified version of the k-means clustering program we created in HW 1,which uses new arguments: K, iter, vector_len, vectors_amt, eps, vectors, centroids.")
       }, {
         "wam", 
@@ -638,7 +638,7 @@ static PyMethodDef spkmeansMethods[] = {
 
 
 
-// modules definition
+/* module's definition */
 static struct PyModuleDef spkmeans_Module = {
     PyModuleDef_HEAD_INIT,
     "spkmeans_capi",     // name of module exposed to Python
