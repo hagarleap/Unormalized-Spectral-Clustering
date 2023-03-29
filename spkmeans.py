@@ -17,8 +17,6 @@ def kmeans_pp(flat_mat, k, vectors_amt):
     keys = np.arange(0,vectors_amt)
     vector_len = k
     
-    
-    
     ##Start algorithm##
     
     ##step 1##
@@ -69,8 +67,6 @@ def kmeans_pp(flat_mat, k, vectors_amt):
         else:    
             print(f"{x}," , end="")
      
-   
-
 def euclidian_distance(vec1, vec2):
     sum = 0
     for i in range(np.size(vec1)):
@@ -107,7 +103,6 @@ def print_matrix(mat, rows, cols):
             else: 
                 print(f"{x}," , end="")
     
-
 def main_func(goal, file_name, k_is_given, k=0):
     
     vectors = np.loadtxt(file_name, delimiter=",", dtype=float)
@@ -172,8 +167,7 @@ def main_func(goal, file_name, k_is_given, k=0):
         print("An Error Has Occurred")
         exit()
             
-         
-            
+                     
 argv = sys.argv[1:]
 if len(argv)==3:
     k = int(argv[0])
