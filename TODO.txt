@@ -20,3 +20,5 @@ python3 spkmeans.py 5 spk test1.txt
 
 
 206825176_318459666_project
+
+zip -r 206825176_318459666_project.zip 206825176_318459666_project
